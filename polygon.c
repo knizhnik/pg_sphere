@@ -822,9 +822,16 @@ spherepoly_in(PG_FUNCTION_ARGS)
 	sphere_yyparse();
 
 	nelem = get_path_count();
+	if (nelem > MAX_POINTS)
+	{
+		reset_buffer();
+		elog(ERROR, "spherepoly_in: too much points");
+		PG_RETURN_NULL();
+
+	}
 	if (nelem > 2)
 	{
-		SPoint		arr[nelem];
+		SPoint		arr[MAX_POINTS];
 
 		for (i = 0; i < nelem; i++)
 		{
@@ -892,7 +899,7 @@ spherepoly_area(PG_FUNCTION_ARGS)
 {
 	SPOLY	   *poly = PG_GETARG_SPOLY(0);
 	int32		i;
-	SPoint		s[poly->npts + 2];
+	SPoint		s[MAX_POINTS + 2];
 	SPoint		stmp[2];
 	SEuler		se;
 	float8		sum = 0.0;

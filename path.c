@@ -511,9 +511,15 @@ spherepath_in(PG_FUNCTION_ARGS)
 	sphere_yyparse();
 
 	nelem = get_path_count();
-	if (nelem > 1)
+	if (nelem > MAX_POINTS)
 	{
-		SPoint		arr[nelem];
+		reset_buffer();
+		elog(ERROR, "spherepath_in: too much points");
+		PG_RETURN_NULL();
+	}
+	else if (nelem > 1)
+	{
+		SPoint		arr[MAX_POINTS];
 
 		for (i = 0; i < nelem; i++)
 		{
